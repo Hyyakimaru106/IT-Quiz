@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT / QUIZ</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #121212;
+            --border: #262626;
+            --text: #ffffff;
+            --text-muted: #a3a3a3;
+            --accent: #ffffff;
+            --accent-dim: #1f1f1f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .hidden { display: none !important; }
+        
+        /* Header / Stats */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+        }
+
+        .meta-box {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        /* Screen: Start */
+        .start-screen {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .start-screen p {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        /* Mode Selector Grid */
+        .mode-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn.active {
+            background: var(--text);
+            color: var(--bg);
+            border-color: var(--text);
+        }
+
+        /* Screen: Quiz */
+        .question-number {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 30px;
+            min-height: 60px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 16px 20px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        /* Leaderboard / Results Table */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0 30px 0;
+            font-size: 0.95rem;
+        }
+
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .leaderboard-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Global Button */
+        .btn-primary {
+            display: inline-block;
+            width: 100%;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .input-flat {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 25px;
+            outline: none;
+            text-align: center;
+        }
+
+        .input-flat:focus {
+            border-color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header Info -->
+        <div class="header">
+            <h1 id="nav-logo">IT // QUIZ</h1>
+            <div id="quiz-stats" class="hidden">
+                <span id="timer-display" class="meta-box" style="margin-right: 10px;">00:00</span>
+                <span id="score-display" class="meta-box">Score: 0</span>
+            </div>
+        </div>
+
+        <!-- 1. START SCREEN -->
+        <div id="start-screen" class="start-screen">
+            <p>Test your tech stack knowledge. Choose your runtime variables below.</p>
+            
+            <div class="section-label">User Credentials</div>
+            <input type="text" id="username" class="input-flat" placeholder="ENTER YOUR INITIALS" maxlength="3">
+            
+            <div class="section-label">Choose Mode (Questions)</div>
+            <div class="mode-container">
+                <button class="mode-btn active" onclick="setMode(10, this)">10 Qs</button>
+                <button class="mode-btn" onclick="setMode(15, this)">15 Qs</button>
+                <button class="mode-btn" onclick="setMode(20, this)">20 Qs</button>
+            </div>
+
+            <button class="btn-primary" onclick="startQuiz()">Initialize</button>
+        </div>
+
+        <!-- 2. QUIZ SCREEN -->
+        <div id="quiz-screen" class="hidden">
+            <div id="question-count" class="question-number">Question 1/10</div>
+            <div id="question-text" class="question-text">Loading question...</div>
+            <div id="options-container" class="options-list">
+                <!-- Options injected here -->
+            </div>
+        </div>
+
+        <!-- 3. LEADERBOARD / END SCREEN -->
+        <div id="end-screen" class="hidden">
+            <h2 style="margin-bottom: 10px; font-weight: 700;">QUIZ COMPLETE</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;" id="final-score-text">You scored 0 points.</p>
+            
+            <h3 style="font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em;" id="leaderboard-title">Leaderboard (10 Qs)</h3>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>User</th>
+                        <th>Accuracy</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <!-- Leaderboard items injected here -->
+                </tbody>
+            </table>
+            <button class="btn-primary" onclick="resetQuiz()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Expanded master repository of 25 IT questions
+        const masterPool = [
+            { q: "What does HTTP stand for?", options: ["Hypertext Transfer Protocol", "High Tech Transfer Protocol", "Hyperlink Text Transmission Process", "Hypertext Tracking Protocol"], answer: 0 },
+            { q: "Which of the following is an open-source operating system?", options: ["Windows", "macOS", "Linux", "iOS"], answer: 2 },
+            { q: "What is the primary purpose of a DNS server?", options: ["To secure network traffic", "To translate domain names to IP addresses", "To store website databases", "To host cloud applications"], answer: 1 },
+            { q: "In computing, what does SQL stand for?", options: ["Simple Query Language", "System Query Logic", "Structured Query Language", "Standard Quantum Loop"], answer: 2 },
+            { q: "Which port is standard for secure web traffic (HTTPS)?", options: ["80", "21", "443", "8080"], answer: 2 },
+            { q: "What is the core execution loop component of a computer?", options: ["RAM", "Hard Drive", "CPU", "GPU"], answer: 2 },
+            { q: "Which programming language is mainly used for Android App development?", options: ["Swift", "Kotlin", "C#", "Objective-C"], answer: 1 },
+            { q: "What does API stand for?", options: ["Application Programming Interface", "Automated Processing Information", "Applied Protocol Integration", "Array Parameter Index"], answer: 0 },
+            { q: "Which Git command saves your local changes to a remote repository?", options: ["git pull", "git commit", "git push", "git clone"], answer: 2 },
+            { q: "What type of database structure uses tables, rows, and columns?", options: ["NoSQL", "Graph", "Relational", "Key-Value"], answer: 2 },
+            { q: "What does CSS stand for?", options: ["Computer Style Sheets", "Creative Style Systems", "Cascading Style Sheets", "Complex Syntax Structure"], answer: 2 },
+            { q: "Which of these is NOT a frontend JavaScript framework/library?", options: ["React", "Angular", "Vue", "Django"], answer: 3 },
+            { q: "What is the default port number for a MySQL database connection?", options: ["27017", "3306", "5432", "6379"], answer: 1 },
+            { q: "What encryption protocol succeeded SSL for secure internet browsing?", options: ["TLS", "SSH", "AES", "RSA"], answer: 0 },
+            { q: "In computing, what does a '403 Forbidden' status code mean?", options: ["Page not found", "Server error", "Authentication required/Access denied", "Request timed out"], answer: 2 },
+            { q: "Which styling format is interpreted natively by web browsers?", options: ["Sass", "Less", "CSS", "Stylus"], answer: 2 },
+            { q: "What data format is natively readable by JavaScript and built on key-value pairs?", options: ["XML", "JSON", "YAML", "CSV"], answer: 1 },
+            { q: "What is the purpose of the 'chmod' command in Linux?", options: ["Change file ownership", "Change file permissions", "Delete directories", "Check storage space"], answer: 1 },
+            { q: "Which network layer handles logical routing of packets across IP addresses?", options: ["Data Link Layer", "Physical Layer", "Network Layer", "Transport Layer"], answer: 2 },
+            { q: "What is the primary function of a Load Balancer?", options: ["Encrypt database backups", "Distribute incoming network traffic across multiple servers", "Compile application code", "Filter firewall spam"], answer: 1 },
+            { q: "Which of the following is a non-volatile memory type?", options: ["SRAM", "DRAM", "SSD Flash Storage", "CPU Cache"], answer: 2 },
+            { q: "What language is natively compiled and run inside almost all modern web browsers?", options: ["Python", "JavaScript", "C++", "Java"], answer: 1 },
+            { q: "What does MVC stand for in software architecture?", options: ["Model View Controller", "Module Variable Code", "Main Vector Compiler", "Macro Virtual Component"], answer: 0 },
+            { q: "Which protocol is primarily used to securely connect to a remote terminal?", options: ["FTP", "Telnet", "SSH", "SMTP"], answer: 2 },
+            { q: "What does Docker use to isolate running software dependencies?", options: ["Virtual Machines", "Containers", "Hypervisors", "Hardware partitions"], answer: 1 }
+        ];
+
+        let activeQuizQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctAnswersCount = 0;
+        let targetQuestionCount = 10; // Default dynamic setting
+        let timeLeft = 60; 
+        let timerInterval;
+        let playerInitials = "ANON";
+
+        // DOM elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const endScreen = document.getElementById('end-screen');
+        const quizStats = document.getElementById('quiz-stats');
+        const timerDisplay = document.getElementById('timer-display');
+        const scoreDisplay = document.getElementById('score-display');
+        const questionCount = document.getElementById('question-count');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+
+        function setMode(num, element) {
+            targetQuestionCount = num;
+            
+            // Clean active classes off selector buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            // Apply highlighting to selected target element
+            element.classList.add('active');
+        }
+
+        // Helper function to shuffle array items cleanly
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startQuiz() {
+            const input = document.getElementById('username').value.trim();
+            if (input) playerInitials = input.toUpperCase();
+
+            // Set dynamic timer threshold relative to chosen length (e.g. 6 seconds per item)
+            timeLeft = targetQuestionCount * 6;
+
+            // Generate localized subset of randomized questions from master resource pool
+            const shuffledPool = shuffleArray(masterPool);
+            activeQuizQuestions = shuffledPool.slice(0, targetQuestionCount);
+
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            quizStats.classList.remove('hidden');
+
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswersCount = 0;
+            
+            scoreDisplay.textContent = `Score: ${score}`;
+            updateTimerDisplay();
+            
+            startTimer();
+            showQuestion();
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function showQuestion() {
+            if (currentQuestionIndex >= activeQuizQuestions.length) {
+                endQuiz();
+                return;
+            }
+
+            const currentQuestion = activeQuizQuestions[currentQuestionIndex];
+            questionCount.textContent = `Question ${currentQuestionIndex + 1}/${activeQuizQuestions.length}`;
+            questionText.textContent = currentQuestion.q;
+            
+            optionsContainer.innerHTML = '';
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.classList.add('option-btn');
+                button.textContent = option;
+                button.onclick = () => handleAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function handleAnswer(selectedIndex) {
+            if (selectedIndex === activeQuizQuestions[currentQuestionIndex].answer) {
+                correctAnswersCount++;
+                score += 20; // Static positive weight value per selection
+                scoreDisplay.textContent = `Score: ${score}`;
+            }
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            quizScreen.classList.add('hidden');
+            quizStats.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+
+            const accuracy = Math.round((correctAnswersCount / targetQuestionCount) * 100);
+            document.getElementById('final-score-text').textContent = `You scored ${score} points (${correctAnswersCount}/${targetQuestionCount} correct — ${accuracy}% accuracy).`;
+            document.getElementById('leaderboard-title').textContent = `Leaderboard (${targetQuestionCount} Qs)`;
+            
+            saveHighScore(playerInitials, score, accuracy, targetQuestionCount);
+            displayLeaderboard();
+        }
+
+        function saveHighScore(name, finalScore, accuracy, modeKey) {
+            // Namespace local storage tracking arrays distinctively by question mode sizes
+            const storageKey = `it_quiz_leaderboard_${modeKey}`;
+            let leaderboard = JSON.parse(localStorage.getItem(storageKey)) || [];
+            
+            leaderboard.push({ name, score: finalScore, accuracy: accuracy });
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 5); // Retain top 5 metrics records local array scope
+            
+            localStorage.setItem(storageKey, JSON.stringify(leaderboard));
+        }
+
+        function displayLeaderboard() {
+            const storageKey = `it_quiz_leaderboard_${targetQuestionCount}`;
+            const leaderboard = JSON.parse(localStorage.getItem(storageKey)) || [];
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '';
+
+            if(leaderboard.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No logs documented for this mode yet.</td></tr>`;
+                return;
+            }
+
+            leaderboard.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>#${index + 1}</td>
+                    <td style="font-weight:600; letter-spacing: 0.05em;">${entry.name}</td>
+                    <td style="color:var(--text-muted);">${entry.accuracy}%</td>
+                    <td>${entry.score}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function resetQuiz() {
+            endScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            document.getElementById('username').value = '';
+        }
+    </script>
+</body>
+</html>
